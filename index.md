@@ -19,7 +19,7 @@ Laboratório de monitoramento de segurança com Wazuh: detecção de tentativa d
 Analisador de log de segurança em Python, projeto final do CS50P de Harvard. Parsing de log de autenticação, detecção de força bruta, classificação de severidade e geração de relatório. Testado com pytest.
 
 ### [vagas-bot](https://github.com/hgardel/vagas-bot)
-Bot em Python que monitora vagas de cybersecurity no LinkedIn, com priorização geográfica, filtro de senioridade e notificações via Telegram, rodando em GitHub Actions.
+Bot em Python que monitora vagas de cybersecurity no LinkedIn e InfoJobs, com priorização geográfica, filtro de senioridade e notificações via Telegram, rodando em GitHub Actions.
 
 ## Skills
 
