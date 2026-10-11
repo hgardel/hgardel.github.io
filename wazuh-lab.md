@@ -1,3 +1,9 @@
+---
+title: Wazuh SOC Lab
+description: Laboratório com Wazuh, alerta 5710, análise em JSON/DQL e avaliação CIS (43/100).
+image: /img/wazuh-alerta-5710.png
+---
+
 # Wazuh SOC Lab
 
 Laboratório de monitoramento de segurança construído do zero pra praticar coleta de log, detecção, configuration assessment e investigação em ambiente controlado.
