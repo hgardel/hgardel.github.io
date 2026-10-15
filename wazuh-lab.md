@@ -1,21 +1,12 @@
----
-title: Wazuh SOC Lab
-description: Laboratório com Wazuh, alerta 5710, análise em JSON/DQL e avaliação CIS (43/100).
-image: /img/wazuh-alerta-5710.png
----
-
 # Wazuh SOC Lab
 
-Laboratório de monitoramento de segurança construído do zero pra praticar coleta de log, detecção, configuration assessment e investigação em ambiente controlado.
+Laboratório local de monitoramento de segurança com Wazuh, Sysmon e VirtualBox. Código e documentação: [wazuh-soc-lab](https://github.com/hgardel/wazuh-soc-lab).
 
 ## Arquitetura
-
-- VirtualBox, duas VMs Ubuntu Server 24.04 LTS:
-  - **wazuh-server**: servidor Wazuh (manager)
-  - **ubuntu-endpoint**: endpoint com o agente Wazuh instalado
-- Rede combinando NAT (acesso à internet) e rede interna host-only (comunicação isolada entre as VMs)
-- Agente instalado via assistente de deploy do próprio Wazuh (pacote DEB, endereço do servidor apontado manualmente)
-- Administração via SSH
+- Servidor Wazuh 4.14.7 em Ubuntu Server
+- Endpoint Linux (Ubuntu Server) com agente Wazuh
+- Endpoint Windows 11 com agente Wazuh e Sysmon
+- Rede host-only isolada, sem exposição à internet
 
 ## Detecção: tentativa de autenticação SSH inválida
 
@@ -29,6 +20,22 @@ Na investigação, cheguei a:
 - IP de origem, usuário utilizado e horário exato de cada tentativa
 - Agente de origem (ubuntu-endpoint, agent.id 001)
 - Consulta DQL (`agent.id:"001" AND rule.groups:"sshd"`) pra isolar os 4 eventos entre as dezenas de outros logs do período
+
+## Endpoint Windows com Sysmon
+
+- Sysmon v15.22 com a configuração SwiftOnSecurity
+- Coleta do canal `Microsoft-Windows-Sysmon/Operational` via `eventchannel`
+- Problemas encontrados e correções: [docs/sysmon-windows.md](https://github.com/hgardel/wazuh-soc-lab/blob/main/docs/sysmon-windows.md)
+- Baseline CIS Windows 11: 24%
+
+## Investigação: alerta de nível 9 que era falso positivo
+
+- Regra 92205 (nível 9), mapeada para T1105 (Ingress Tool Transfer)
+- Processo filho de `wazuh-agent.exe`, com assinatura digital válida
+- Conclusão: falso positivo, causado pela própria varredura do agente
+- Ajuste futuro com supressão restrita ao `ParentImage`
+
+Detalhes e evidências: [investigação completa](https://github.com/hgardel/wazuh-soc-lab/blob/main/investigations/01-falso-positivo-sca.md).
 
 ## Configuration Assessment (CIS Benchmark)
 
@@ -52,11 +59,11 @@ Com os agentes rodando, o painel Overview consolidou, em 24h: 92 alertas de seve
 
 ## O que isso demonstra
 
-- Configuração de arquitetura cliente-servidor de SIEM open source
+- Arquitetura cliente-servidor de SIEM open source
 - Deploy de agente via assistente oficial
-- Coleta e centralização de log
-- Investigação de alerta usando consulta DQL
-- Configuration assessment contra benchmark reconhecido (CIS), com leitura de score e priorização de achados
+- Coleta e centralização de logs de Linux e Windows
+- Investigação de alerta com consulta DQL e com Sysmon (ParentImage, assinatura)
+- Configuration assessment contra benchmark CIS, com leitura de score e priorização
 - Conexão entre log técnico, configuração insegura e contexto de ameaça
 
 [Voltar](./index.md)
